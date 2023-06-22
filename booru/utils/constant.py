@@ -1,4 +1,4 @@
-import json
+import orjson
 import re
 from booru import __version__
 
@@ -165,7 +165,7 @@ def better_object(parser: dict):
         The new dictionaries with neat keys.
 
     """
-    return json.dumps(parser, sort_keys=True, indent=4, ensure_ascii=False)
+    return orjson.dumps(parser)
 
 
 def parse_image(raw_object: dict):
@@ -222,7 +222,7 @@ def resolve(b_object: dict) -> dict:
     dict
         raw json object
     """
-    return json.loads(b_object)
+    return orjson.loads(b_object)
 
 
 def parse_image_danbooru(raw_object: dict) -> list:

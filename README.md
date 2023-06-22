@@ -1,5 +1,12 @@
 # Booru
+
 Python bindings for Booru imageboards
+
+**modified in order to work better with a discord bot**
+
+- improve performance by using `lxml` and `orjson` instead of standard html parser and stdlib json
+- add result count to queries
+- pass in aiohttp session to requests, instead of creating a new one for each request
 
 <a href="http://sinkaroid.github.io/booru"><img align="right" src="https://cdn.discordapp.com/attachments/952117487166705747/961124440400351232/mataa.png" width="400"></a>
 
@@ -16,8 +23,8 @@ Python bindings for Booru imageboards
   - [booru.resolve()](#booruresolve)
   - [Import specific booru client](#search)
   - [Testing cases](https://github.com/sinkaroid/booru/actions)
-      - [The core](https://github.com/sinkaroid/booru/actions)
-      - [Tags completion](https://github.com/sinkaroid/booru/actions/workflows/find_tags.yml)
+    - [The core](https://github.com/sinkaroid/booru/actions)
+    - [Tags completion](https://github.com/sinkaroid/booru/actions/workflows/find_tags.yml)
   - [Documentation](#documentation)
   - [Legal](#legal)  
 
@@ -39,6 +46,7 @@ It is takes a much more functionalities to interacts with ease, and featureful. 
 </div>
 
 ## Features
+
 - Plenty of imageboards
 - Search random & gacha returns
 - Tags block, resolved safety tags concerns
@@ -48,46 +56,51 @@ It is takes a much more functionalities to interacts with ease, and featureful. 
 - Easy to use, check your intelisense
 
 ## Usage
-Async context, and it's recommended use [asyncio](https://docs.python.org/3/library/asyncio.html) / https://sinkaroid.github.io/booru
+
+Async context, and it's recommended use [asyncio](https://docs.python.org/3/library/asyncio.html) / <https://sinkaroid.github.io/booru>
 
 ### Prerequisites
+
 <table>
-	<td><b>NOTE:</b> Python 3.7 or above</td>
+ <td><b>NOTE:</b> Python 3.7 or above</td>
 </table>
 
 ### Installation
-`pip install booru`
 
+`pip install booru`
 
 ## This library vs. the Competition
 
-**Features availability** for this library 
+**Features availability** for this library
 
 | Booru                                       | Status                                                                                                                                                   | Random | Tags block | Tags finder     | Get images     | Gacha     |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ----- | ----- | ----- | 
-| [Gelbooru](https://gelbooru.com/)           | [![status](https://github.com/sinkaroid/booru/workflows/Gelbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/gel.yml)            | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Danbooru](https://danbooru.donmai.us/)     | [![status](https://github.com/sinkaroid/booru/workflows/Danbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/danbo.yml)  | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Rule34](https://rule34.xxx)                | [![status](https://github.com/sinkaroid/booru/workflows/Rule34/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/r34.yml)        | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Realbooru](https://realbooru.com/)         | [![status](https://github.com/sinkaroid/booru/workflows/Realbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/real.yml)       | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Tbib](https://tbib.org/)                   | [![status](https://github.com/sinkaroid/booru/workflows/Tbib/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/tbib.yml)   | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Xbooru](https://xbooru.com/)               | [![status](https://github.com/sinkaroid/booru/workflows/Xbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/xbo.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Safebooru](https://safebooru.org/)         | [![status](https://github.com/sinkaroid/booru/workflows/Safebooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/safe.yml)   | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Yandere](https://yande.re/)                | [![status](https://github.com/sinkaroid/booru/workflows/Yandere/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/yande.yml)   | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Lolibooru](https://lolibooru.moe/)         | [![status](https://github.com/sinkaroid/booru/workflows/Lolibooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/loli.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Konachan](https://konachan.com/)           | [![status](https://github.com/sinkaroid/booru/workflows/Konachan/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/kona.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Konachan.net](https://konachan.net/)       | [![status](https://github.com/sinkaroid/booru/workflows/KonachanNet/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/konanet.yml) | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Hypnohub](https://hypnohub.net/)           | [![status](https://github.com/sinkaroid/booru/workflows/Hypnohub/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/hypno.yml)  | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [E621](https://e621.net/)                   | [![status](https://github.com/sinkaroid/booru/workflows/E621/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/e6.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` | 
-| [E926](https://e926.net/)                   | [![status](https://github.com/sinkaroid/booru/workflows/E926/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/e9.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` | 
-| [Derpibooru](https://derpibooru.org/)       | [![status](https://github.com/sinkaroid/booru/workflows/Derpibooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/derpi.yml)   | `Yes`      | `No`      | `No` | `Yes` | `Yes` | 
-| [Furbooru](https://furbooru.org/)           | [![status](https://github.com/sinkaroid/booru/workflows/Furbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/fur.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` | 
-| [ATFbooru](https://booru.allthefallen.moe/) | [![status](https://github.com/sinkaroid/booru/workflows/ATFbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/atf.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` | 
-| [Behoimi](http://behoimi.org/)              | [![status](https://github.com/sinkaroid/booru/workflows/Behoimi/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/behoi.yml)   | `Yes`      | `No`      | `No` | `Yes` | `Yes` | 
-| [Paheal](https://rule34.paheal.net/)        | [![status](https://github.com/sinkaroid/booru/workflows/Paheal/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/paheal.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` | 
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ---------- | ----- | ----- | ----- |
+| [Gelbooru](https://gelbooru.com/)           | [![status](https://github.com/sinkaroid/booru/workflows/Gelbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/gel.yml)            | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Danbooru](https://danbooru.donmai.us/)     | [![status](https://github.com/sinkaroid/booru/workflows/Danbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/danbo.yml)  | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Rule34](https://rule34.xxx)                | [![status](https://github.com/sinkaroid/booru/workflows/Rule34/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/r34.yml)        | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Realbooru](https://realbooru.com/)         | [![status](https://github.com/sinkaroid/booru/workflows/Realbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/real.yml)       | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Tbib](https://tbib.org/)                   | [![status](https://github.com/sinkaroid/booru/workflows/Tbib/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/tbib.yml)   | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Xbooru](https://xbooru.com/)               | [![status](https://github.com/sinkaroid/booru/workflows/Xbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/xbo.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Safebooru](https://safebooru.org/)         | [![status](https://github.com/sinkaroid/booru/workflows/Safebooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/safe.yml)   | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Yandere](https://yande.re/)                | [![status](https://github.com/sinkaroid/booru/workflows/Yandere/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/yande.yml)   | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Lolibooru](https://lolibooru.moe/)         | [![status](https://github.com/sinkaroid/booru/workflows/Lolibooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/loli.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Konachan](https://konachan.com/)           | [![status](https://github.com/sinkaroid/booru/workflows/Konachan/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/kona.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Konachan.net](https://konachan.net/)       | [![status](https://github.com/sinkaroid/booru/workflows/KonachanNet/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/konanet.yml) | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Hypnohub](https://hypnohub.net/)           | [![status](https://github.com/sinkaroid/booru/workflows/Hypnohub/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/hypno.yml)  | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [E621](https://e621.net/)                   | [![status](https://github.com/sinkaroid/booru/workflows/E621/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/e6.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` |
+| [E926](https://e926.net/)                   | [![status](https://github.com/sinkaroid/booru/workflows/E926/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/e9.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` |
+| [Derpibooru](https://derpibooru.org/)       | [![status](https://github.com/sinkaroid/booru/workflows/Derpibooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/derpi.yml)   | `Yes`      | `No`      | `No` | `Yes` | `Yes` |
+| [Furbooru](https://furbooru.org/)           | [![status](https://github.com/sinkaroid/booru/workflows/Furbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/fur.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` |
+| [ATFbooru](https://booru.allthefallen.moe/) | [![status](https://github.com/sinkaroid/booru/workflows/ATFbooru/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/atf.yml)    | `Yes`      | `Yes`      | `Yes` | `Yes` | `Yes` |
+| [Behoimi](http://behoimi.org/)              | [![status](https://github.com/sinkaroid/booru/workflows/Behoimi/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/behoi.yml)   | `Yes`      | `No`      | `No` | `Yes` | `Yes` |
+| [Paheal](https://rule34.paheal.net/)        | [![status](https://github.com/sinkaroid/booru/workflows/Paheal/badge.svg)](https://github.com/sinkaroid/booru/actions/workflows/paheal.yml)     | `Yes`      | `No`      | `No` | `Yes` | `Yes` |
 
 ## Example
+
 ### **search()**
+
 Takes parameter `(query: str, block: str = "", limit: int = 100, page: int = 1, random: bool = True, gacha: bool = False)`
+
 ```py
 import asyncio
 import booru
@@ -100,9 +113,11 @@ async def main():
 
 asyncio.run(main())
 ```  
+
 - You will never gets content which contains futa tags.
 
 You can also import specific booru client.
+
 ```py
 from booru import Rule34
 some_booru = Rule34()
@@ -111,7 +126,9 @@ some_booru = Rule34()
 ```
 
 ### **search_image()**
+
 Takes parameter `(query: str, block: str = "", limit: int = 100, page: int = 1)`
+
 ```py
 import asyncio
 from booru import Rule34
@@ -123,9 +140,11 @@ async def main():
 
 asyncio.run(main())
 ```  
+
 - This will parses image url only, instead object
 
 ### **find_tags()**
+
 You want to wildcard or query completion like the browser do?  
 <center>
 <table>
@@ -149,15 +168,19 @@ async def main():
 
 asyncio.run(main())
 ```
+
 - Get the `wildcard[0]` for the best match.
 
 ## booru.resolve()
+
 You will need this for every object, this library designed to be neat and clean returns, although it must be reparsed to the string first, that's why `booru.resolve()` exist.
 
 ## Documentation
-The documentation can be found https://sinkaroid.github.io/booru
+
+The documentation can be found <https://sinkaroid.github.io/booru>
 
 ## Legal
+
 This tool can be freely copied, modified, altered, distributed without any attribution whatsoever. However, if you feel
 like this tool deserves an attribution, mention it. It won't hurt anybody
 > Licence: WTF.

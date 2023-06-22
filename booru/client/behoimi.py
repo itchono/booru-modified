@@ -3,13 +3,14 @@ from typing import Union
 from ..utils.fetch import request, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 # these referer request just help you out to interacts with the API, not for displaying images
 
 
-class Behoimi(object):
+class Behoimi(ClientSessionMixin):
     """3d booru / Behoimi Client
 
     Methods
@@ -44,7 +45,9 @@ class Behoimi(object):
 
         return raw_object
 
-    def __init__(self):
+    def __init__(self, http_session):
+        self.http_session = http_session
+
         self.specs = {}
 
     async def search(
@@ -90,7 +93,7 @@ class Behoimi(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.behoimi, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.behoimi, params_x=self.specs, block=block)
         self.appended = Behoimi.append_object(raw_data)
 
         try:
@@ -139,7 +142,7 @@ class Behoimi(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.behoimi, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.behoimi, params_x=self.specs, block=block)
         self.appended = Behoimi.append_object(raw_data)
 
         try:

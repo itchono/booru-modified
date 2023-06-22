@@ -1,15 +1,16 @@
-import json
+import orjson
 import re
 import aiohttp
 from typing import Union
 from ..utils.constant import Api, better_object
 from random import shuffle, randint
 from xmltodict import parse
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Paheal(object):
+class Paheal(ClientSessionMixin):
     """Paheal Client
 
     Methods
@@ -22,7 +23,7 @@ class Paheal(object):
 
     """
 
-    def __init__(self, api_key: str = "", user_id: str = ""):
+    def __init__(self, http_session, api_key: str = "", user_id: str = ""):
         """Initializes paheal.
 
         Parameters
@@ -40,6 +41,8 @@ class Paheal(object):
         else:
             self.api_key = api_key
             self.user_id = user_id
+
+        self.http_session = http_session
 
         self.specs = {"api_key": self.api_key, "user_id": self.user_id}
 
@@ -88,8 +91,8 @@ class Paheal(object):
             async with session.get(Booru.paheal, params=self.specs) as resp:
                 self.data = await resp.text()
                 data_dict = parse(self.data)
-                unsolved = json.dumps(data_dict)
-                self.final = json.loads(unsolved)
+                unsolved = orjson.dumps(data_dict)
+                self.final = orjson.loads(unsolved)
 
                 if "tag" not in self.final["posts"]:
                     raise ValueError(Booru.error_handling_null)
@@ -149,8 +152,8 @@ class Paheal(object):
                 async with session.get(Booru.paheal, params=self.specs) as resp:
                     self.data = await resp.text()
                     data_dict = parse(self.data)
-                    unsolved = json.dumps(data_dict)
-                    self.final = json.loads(unsolved)
+                    unsolved = orjson.dumps(data_dict)
+                    self.final = orjson.loads(unsolved)
 
                     abc_kontol = self.final["posts"]["tag"]
                     ## extract all image urls

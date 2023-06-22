@@ -3,11 +3,12 @@ from typing import Union
 from ..utils.fetch import request, request_wildcard, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Hypnohub(object):
+class Hypnohub(ClientSessionMixin):
     """Hypnohub Client
 
     Methods
@@ -45,7 +46,7 @@ class Hypnohub(object):
 
         return raw_object
 
-    def __init__(self, api_key: str = "", user_id: str = ""):
+    def __init__(self, http_session, api_key: str = "", user_id: str = ""):
         """Initializes hypnohub.
 
         Parameters
@@ -63,6 +64,8 @@ class Hypnohub(object):
         else:
             self.api_key = api_key
             self.user_id = user_id
+
+        self.http_session = http_session
 
         self.specs = {"api_key": self.api_key, "user_id": self.user_id}
 
@@ -110,7 +113,7 @@ class Hypnohub(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.hypnohub, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.hypnohub, params_x=self.specs, block=block)
         self.appended = Hypnohub.append_object(raw_data)
 
         try:
@@ -159,7 +162,7 @@ class Hypnohub(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.hypnohub, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.hypnohub, params_x=self.specs, block=block)
         self.appended = Hypnohub.append_object(raw_data)
 
         try:
@@ -181,7 +184,7 @@ class Hypnohub(object):
             The list of tags.
         """
         try:
-            data = await request_wildcard(site=Booru.hypnohub_wildcard, query=query)
+            data = await  request_wildcard(self.http_session, site=Booru.hypnohub_wildcard, query=query)
             return better_object(data)
 
         except Exception as e:

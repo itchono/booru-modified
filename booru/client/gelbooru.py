@@ -3,11 +3,12 @@ from typing import Union
 from ..utils.fetch import request, request_wildcard, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Gelbooru(object):
+class Gelbooru(ClientSessionMixin):
     """Gelbooru Client
 
     Methods
@@ -45,7 +46,7 @@ class Gelbooru(object):
 
         return raw_object
 
-    def __init__(self, api_key: str = "", user_id: str = ""):
+    def __init__(self, http_session, api_key: str = "", user_id: str = ""):
         """Initializes gelbooru.
 
         Parameters
@@ -63,6 +64,8 @@ class Gelbooru(object):
         else:
             self.api_key = api_key
             self.user_id = user_id
+
+        self.http_session = http_session
 
         self.specs = {"api_key": self.api_key, "user_id": self.user_id}
 
@@ -111,7 +114,7 @@ class Gelbooru(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.gelbooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.gelbooru, params_x=self.specs, block=block)
         self.appended = Gelbooru.append_object(raw_data)
 
         try:
@@ -160,7 +163,7 @@ class Gelbooru(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.gelbooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.gelbooru, params_x=self.specs, block=block)
         self.appended = Gelbooru.append_object(raw_data)
 
         try:
@@ -182,7 +185,7 @@ class Gelbooru(object):
             The list of tags (as string, you may need booru.resolve())
         """
         try:
-            data = await request_wildcard(site=Booru.gelbooru_wildcard, query=query)
+            data = await  request_wildcard(self.http_session, site=Booru.gelbooru_wildcard, query=query)
             return better_object(data)
 
         except Exception as e:

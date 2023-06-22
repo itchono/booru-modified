@@ -4,11 +4,12 @@ from ..utils.fetch import request, request_wildcard, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
 
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Lolibooru(object):
+class Lolibooru(ClientSessionMixin):
     """lolibooru Client
 
     Methods
@@ -46,7 +47,9 @@ class Lolibooru(object):
 
         return raw_object
 
-    def __init__(self):
+    def __init__(self, http_session):
+        self.http_session = http_session
+
         self.specs = {}
 
     async def search(
@@ -92,7 +95,7 @@ class Lolibooru(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.lolibooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.lolibooru, params_x=self.specs, block=block)
         self.appended = Lolibooru.append_object(raw_data)
 
         try:
@@ -140,7 +143,7 @@ class Lolibooru(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.lolibooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.lolibooru, params_x=self.specs, block=block)
         self.appended = Lolibooru.append_object(raw_data)
 
         try:
@@ -162,7 +165,7 @@ class Lolibooru(object):
             The list of tags.
         """
         try:
-            data = await request_wildcard(site=Booru.lolibooru_wildcard, query=query)
+            data = await  request_wildcard(self.http_session, site=Booru.lolibooru_wildcard, query=query)
             return better_object(data)
 
         except Exception as e:

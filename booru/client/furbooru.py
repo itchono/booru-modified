@@ -2,11 +2,12 @@ import aiohttp
 from typing import Union
 from ..utils.constant import Api, better_object, get_hostname
 from random import shuffle, randint
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Furbooru(object):
+class Furbooru(ClientSessionMixin):
     """furbooru wrapper
 
     Methods
@@ -41,7 +42,7 @@ class Furbooru(object):
 
         return raw_object
 
-    def __init__(self, key: str = ""):
+    def __init__(self, http_session, key: str = ""):
         """Initializes furbooru.
 
         Parameters
@@ -54,6 +55,8 @@ class Furbooru(object):
             self.key = None
         else:
             self.key = key
+
+        self.http_session = http_session
 
         self.specs = {"key": self.key}
 

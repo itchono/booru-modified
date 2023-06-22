@@ -3,11 +3,12 @@ from typing import Union
 from ..utils.fetch import request, request_wildcard, roll
 from ..utils.constant import Api, better_object, parse_image_danbooru, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Atfbooru(object):
+class Atfbooru(ClientSessionMixin):
     """AllTheFallen Client
 
     Methods
@@ -45,7 +46,7 @@ class Atfbooru(object):
 
         return raw_object
 
-    def __init__(self, api_key: str = "", user_id: str = ""):
+    def __init__(self, http_session, api_key: str = "", user_id: str = ""):
         """Initializes atfbooru.
 
         Parameters
@@ -55,6 +56,7 @@ class Atfbooru(object):
         user_id : str
             Your user ID, which is accessible on the account options/profile page.
         """
+        self.http_session = http_session
 
         if api_key and user_id == "":
             self.api_key = None
@@ -108,7 +110,7 @@ class Atfbooru(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.atfbooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.atfbooru, params_x=self.specs, block=block)
         self.appended = Atfbooru.append_object(raw_data)
 
         try:
@@ -157,7 +159,7 @@ class Atfbooru(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.atfbooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.atfbooru, params_x=self.specs, block=block)
         self.appended = Atfbooru.append_object(raw_data)
 
         try:
@@ -179,7 +181,7 @@ class Atfbooru(object):
             The list of tags.
         """
         try:
-            data = await request_wildcard(site=Booru.atfbooru_wildcard, query=query)
+            data = await  request_wildcard(self.http_session, site=Booru.atfbooru_wildcard, query=query)
             return better_object(data)
 
         except Exception as e:

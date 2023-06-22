@@ -3,11 +3,12 @@ from typing import Union
 from ..utils.fetch import request, request_wildcard, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Yandere(object):
+class Yandere(ClientSessionMixin):
     """Yandere Client
 
     Methods
@@ -45,7 +46,9 @@ class Yandere(object):
 
         return raw_object
 
-    def __init__(self):
+    def __init__(self, http_session):
+        self.http_session = http_session
+
         self.specs = {}
 
     async def search(
@@ -91,7 +94,7 @@ class Yandere(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.yandere, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.yandere, params_x=self.specs, block=block)
         self.appended = Yandere.append_object(raw_data)
 
         try:
@@ -139,7 +142,7 @@ class Yandere(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.yandere, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.yandere, params_x=self.specs, block=block)
         self.appended = Yandere.append_object(raw_data)
 
         try:
@@ -161,7 +164,7 @@ class Yandere(object):
             The list of tags.
         """
         try:
-            data = await request_wildcard(site=Booru.yandere_wildcard, query=query)
+            data = await  request_wildcard(self.http_session, site=Booru.yandere_wildcard, query=query)
             return better_object(data)
 
         except Exception as e:

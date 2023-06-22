@@ -3,11 +3,12 @@ from typing import Union
 from ..utils.fetch import request, request_wildcard, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Rule34(object):
+class Rule34(ClientSessionMixin):
     """Rule34 Client
 
     Methods
@@ -46,7 +47,9 @@ class Rule34(object):
 
         return raw_object
 
-    def __init__(self):
+    def __init__(self, http_session):
+        self.http_session = http_session
+
         self.specs = {}
 
     async def search(
@@ -93,7 +96,7 @@ class Rule34(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.rule34, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.rule34, params_x=self.specs, block=block)
         self.appended = Rule34.append_object(raw_data)
 
         try:
@@ -142,7 +145,7 @@ class Rule34(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.rule34, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.rule34, params_x=self.specs, block=block)
         self.appended = Rule34.append_object(raw_data)
 
         try:
@@ -164,7 +167,7 @@ class Rule34(object):
             The list of tags.
         """
         try:
-            data = await request_wildcard(site=Booru.rule34_wildcard, query=query)
+            data = await  request_wildcard(self.http_session, site=Booru.rule34_wildcard, query=query)
             return better_object(data)
 
         except Exception as e:

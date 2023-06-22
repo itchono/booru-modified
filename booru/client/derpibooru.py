@@ -3,11 +3,12 @@ from typing import Union
 from ..utils.fetch import request, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Derpibooru(object):
+class Derpibooru(ClientSessionMixin):
     """derpibooru wrapper
 
     Methods
@@ -42,7 +43,7 @@ class Derpibooru(object):
 
         return raw_object
 
-    def __init__(self, key: str = ""):
+    def __init__(self, http_session, key: str = ""):
         """Initializes derpibooru.
 
         Parameters
@@ -55,6 +56,8 @@ class Derpibooru(object):
             self.key = None
         else:
             self.key = key
+
+        self.http_session = http_session
 
         self.specs = {"key": self.key}
 
@@ -100,7 +103,7 @@ class Derpibooru(object):
         self.specs["per_page"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.derpibooru, params_x=self.specs, block="")
+        raw_data = await request(self.http_session, site=Booru.derpibooru, params_x=self.specs, block="")
         self.appended = Derpibooru.append_object(raw_data["images"])
 
         try:

@@ -3,11 +3,12 @@ from typing import Union
 from random import shuffle
 from ..utils.fetch import request, request_wildcard, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class Safebooru(object):
+class Safebooru(ClientSessionMixin):
     """Safebooru Client
 
     Methods
@@ -48,7 +49,7 @@ class Safebooru(object):
 
         return raw_object
 
-    def __init__(self, api_key: str = "", user_id: str = ""):
+    def __init__(self, http_session, api_key: str = "", user_id: str = ""):
         """Initializes safebooru.
 
         Parameters
@@ -66,6 +67,8 @@ class Safebooru(object):
         else:
             self.api_key = api_key
             self.user_id = user_id
+
+        self.http_session = http_session
 
         self.specs = {"api_key": self.api_key, "user_id": self.user_id}
 
@@ -113,7 +116,7 @@ class Safebooru(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.safebooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.safebooru, params_x=self.specs, block=block)
         self.appended = Safebooru.append_object(raw_data)
 
         try:
@@ -162,7 +165,7 @@ class Safebooru(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.safebooru, params_x=self.specs, block=block)
+        raw_data = await request(self.http_session, site=Booru.safebooru, params_x=self.specs, block=block)
         self.appended = Safebooru.append_object(raw_data)
 
         try:
@@ -184,7 +187,7 @@ class Safebooru(object):
             The list of tags.
         """
         try:
-            data = await request_wildcard(site=Booru.safebooru_wildcard, query=query)
+            data = await  request_wildcard(self.http_session, site=Booru.safebooru_wildcard, query=query)
             return better_object(data)
 
         except Exception as e:

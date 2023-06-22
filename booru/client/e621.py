@@ -2,11 +2,12 @@ from typing import Union
 from ..utils.fetch import request, roll
 from ..utils.constant import Api, better_object, parse_image, get_hostname
 from random import shuffle
+from .clientsession_mixin import ClientSessionMixin
 
 Booru = Api()
 
 
-class E621(object):
+class E621(ClientSessionMixin):
     """E621 Client
 
     Methods
@@ -41,7 +42,7 @@ class E621(object):
 
         return raw_object
 
-    def __init__(self, api_key: str = "", user_id: str = ""):
+    def __init__(self, http_session, api_key: str = "", user_id: str = ""):
         """Initializes e621.
 
         Parameters
@@ -59,6 +60,8 @@ class E621(object):
         else:
             self.api_key = api_key
             self.user_id = user_id
+
+        self.http_session = http_session
 
         self.specs = {"api_key": self.api_key, "user_id": self.user_id}
 
@@ -104,7 +107,7 @@ class E621(object):
         self.specs["limit"] = limit
         self.specs["page"] = page
 
-        raw_data = await request(site=Booru.e621, params_x=self.specs, block="")
+        raw_data = await request(self.http_session, site=Booru.e621, params_x=self.specs, block="")
         self.appended = E621.append_object(raw_data["posts"])
 
         try:
@@ -151,7 +154,7 @@ class E621(object):
         self.specs["pid"] = page
         self.specs["json"] = "1"
 
-        raw_data = await request(site=Booru.e621, params_x=self.specs, block="")
+        raw_data = await request(self.http_session, site=Booru.e621, params_x=self.specs, block="")
         self.appended = E621.append_object(raw_data["posts"])
 
         try:
